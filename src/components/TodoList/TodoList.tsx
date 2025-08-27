@@ -9,10 +9,12 @@ export const TodoList: React.FC = () => {
   const dispatch = useAppDispatch();
   const todos: Todo[] = useAppSelector(state => state.todos);
   const currentTodo = useAppSelector(state => state.currentTodo);
+  const { status, query } = useAppSelector(state => state.filter);
 
-  function getFilteredTodos() {
-    const { status, query } = useAppSelector(state => state.filter);
-
+  function getFilteredTodos(
+    todos: Todo[],
+    { status, query }: { status: string; query: string },
+  ) {
     if (status === 'all') {
       return todos.filter(todo =>
         todo.title.toLowerCase().includes(query.toLowerCase()),
@@ -25,6 +27,8 @@ export const TodoList: React.FC = () => {
         (status === 'active' ? !todo.completed : todo.completed),
     );
   }
+
+  const filtered = getFilteredTodos(todos, { status, query });
 
   return (
     <>
@@ -46,7 +50,7 @@ export const TodoList: React.FC = () => {
           </thead>
 
           <tbody>
-            {getFilteredTodos().map(todo => (
+            {filtered.map(todo => (
               <tr
                 data-cy="todo"
                 className={`${currentTodo === todo ? 'has-background-info-light' : ''}`}
